@@ -8,7 +8,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "iconv-lite": "^0.4.17",
     "jschardet": "^1.4.2"
