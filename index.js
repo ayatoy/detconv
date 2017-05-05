@@ -1,34 +1,26 @@
 'use strict';
 
-var Buffer = require('buffer').Buffer;
-var Transform = require('stream').Transform;
-var jschardet = require('jschardet');
-var iconv = require('iconv-lite');
+const Buffer = require('buffer').Buffer;
+const Transform = require('stream').Transform;
+const jschardet = require('jschardet');
+const iconv = require('iconv-lite');
 
-var detconv = module.exports;
+const detconv = module.exports;
 
-function normalizeCharsetName(name) {
-    return name.toLowerCase().replace(/_/g, '-');
-}
+const normalizeCharsetName = name => name.toLowerCase().replace(/_/g, '-');
 
-detconv.convert = function convert(input, encoding) {
-    var str = null;
+detconv.convert = (input, encoding) => {
+    let str = null;
     if (input instanceof Buffer) {
-        var detected = jschardet.detect(input);
-        if (!detected.encoding) {
-            return null;
-        }
-        var inputEncoding = normalizeCharsetName(detected.encoding);
-        if (!iconv.encodingExists(inputEncoding)) {
-            return null;
-        }
+        const detected = jschardet.detect(input);
+        if (!detected.encoding) return null;
+        const inputEncoding = normalizeCharsetName(detected.encoding);
+        if (!iconv.encodingExists(inputEncoding)) return null;
         str = iconv.decode(input, inputEncoding);
     } else {
         str = input;
     }
-    var outputEncoding = normalizeCharsetName(encoding || 'utf-8');
-    if (!iconv.encodingExists(outputEncoding)) {
-        return null;
-    }
+    const outputEncoding = normalizeCharsetName(encoding || 'utf-8');
+    if (!iconv.encodingExists(outputEncoding)) return null;
     return iconv.encode(str, outputEncoding);
-}
+};
