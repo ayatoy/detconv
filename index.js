@@ -24,3 +24,28 @@ detconv.convert = (input, encoding) => {
     if (!iconv.encodingExists(outputEncoding)) return null;
     return iconv.encode(str, outputEncoding);
 };
+
+class DetconvConvertStream extends Transform {
+    constructor(encoding, options) {
+        super(options);
+        this._encoding = encoding;
+        this._buffer = null;
+    }
+    _transform(chunk, encoding, done) {
+        if (!this._buffer) this._buffer = chunk;
+        else if (chunk instanceof Buffer) this._buffer = Buffer.concat([this._buffer, chunk]);
+        else this._buffer += chunk;
+        done();
+    }
+    _flush(done) {
+        if (!this._buffer) return done();
+        const buf = detconv.convert(this._buffer, this._encoding);
+        this._buffer = null;
+        if (!buf) return done(new Error('Conversion failed.'));
+        this.push(buf);
+        done();
+    }
+}
+
+detconv.DetconvConvertStream = DetconvConvertStream;
+detconv.convertStream = encoding => new DetconvConvertStream(encoding);
