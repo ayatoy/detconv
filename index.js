@@ -10,58 +10,58 @@ const detconv = module.exports;
 const normalizeCharsetName = name => name.toLowerCase().replace(/_/g, '-');
 
 detconv.convert = (input, encoding) => {
-    let str = null;
-    if (Buffer.isBuffer(input)) {
-        const detected = jschardet.detect(input);
-        if (!detected.encoding) {
-            throw new Error('detection failed');
-        }
-        const inputEncoding = normalizeCharsetName(detected.encoding);
-        if (!iconv.encodingExists(inputEncoding)) {
-            throw new Error('input encoding does not exists: ' + inputEncoding);
-        }
-        str = iconv.decode(input, inputEncoding);
-    } else if (typeof input === 'string') {
-        str = input;
-    } else {
-        throw new Error('input must be Buffer or string: ' + input);
+  let str = null;
+  if (Buffer.isBuffer(input)) {
+    const detected = jschardet.detect(input);
+    if (!detected.encoding) {
+      throw new Error('detection failed');
     }
-    const outputEncoding = normalizeCharsetName(encoding || 'utf-8');
-    if (!iconv.encodingExists(outputEncoding)) {
-        throw new Error('output encoding does not exists: ' + outputEncoding);
+    const inputEncoding = normalizeCharsetName(detected.encoding);
+    if (!iconv.encodingExists(inputEncoding)) {
+      throw new Error('input encoding does not exists: ' + inputEncoding);
     }
-    return iconv.encode(str, outputEncoding);
+    str = iconv.decode(input, inputEncoding);
+  } else if (typeof input === 'string') {
+    str = input;
+  } else {
+    throw new Error('input must be Buffer or string: ' + input);
+  }
+  const outputEncoding = normalizeCharsetName(encoding || 'utf-8');
+  if (!iconv.encodingExists(outputEncoding)) {
+    throw new Error('output encoding does not exists: ' + outputEncoding);
+  }
+  return iconv.encode(str, outputEncoding);
 };
 
 class DetconvConvertStream extends Transform {
-    constructor(encoding, options) {
-        super(options);
-        this._encoding = encoding;
-        this._buffer = null;
+  constructor(encoding, options) {
+    super(options);
+    this._encoding = encoding;
+    this._buffer = null;
+  }
+  _transform(chunk, encoding, done) {
+    if (Buffer.isBuffer(chunk)) {
+      if (!this._buffer) this._buffer = chunk;
+      else this._buffer = Buffer.concat([this._buffer, chunk]);
+    } else if (typeof chunk === 'string') {
+      if (!this._buffer) this._buffer = chunk;
+      else this._buffer += chunk;
+    } else {
+      return done(new Error('input must be Buffer or string: ' + chunk));
     }
-    _transform(chunk, encoding, done) {
-        if (Buffer.isBuffer(chunk)) {
-            if (!this._buffer) this._buffer = chunk;
-            else this._buffer = Buffer.concat([this._buffer, chunk]);
-        } else if (typeof chunk === 'string') {
-            if (!this._buffer) this._buffer = chunk;
-            else this._buffer += chunk;
-        } else {
-            return done(new Error('input must be Buffer or string: ' + chunk));
-        }
-        done();
+    done();
+  }
+  _flush(done) {
+    if (!this._buffer) return done();
+    try {
+      this.push(detconv.convert(this._buffer, this._encoding));
+      done();
+    } catch (e) {
+      done(e);
+    } finally {
+      this._buffer = null;
     }
-    _flush(done) {
-        if (!this._buffer) return done();
-        try {
-            this.push(detconv.convert(this._buffer, this._encoding));
-            done();
-        } catch (e) {
-            done(e);
-        } finally {
-            this._buffer = null;
-        }
-    }
+  }
 }
 
 detconv.DetconvConvertStream = DetconvConvertStream;
