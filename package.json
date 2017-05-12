@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "keywords": [],
   "author": "",
@@ -12,5 +12,9 @@
   "dependencies": {
     "iconv-lite": "^0.4.17",
     "jschardet": "^1.4.2"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
   }
 }
