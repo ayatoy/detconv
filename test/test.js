@@ -24,7 +24,7 @@ const bufferEqual = (buf1, buf2) => {
 };
 
 const convertTest = (spec, done) => {
-  let fromBuf = Buffer.from('');
+  let fromBuf = new Buffer(0);
   fs.createReadStream(spec.lipsum)
   .on('error', done)
   .on('data', chunk => fromBuf = Buffer.concat([fromBuf, chunk]))
@@ -56,8 +56,8 @@ const convertTest = (spec, done) => {
 };
 
 const convertStreamTest = (spec, done) => {
-  let fromBuf = Buffer.from('');
-  let toBuf = Buffer.from('');
+  let fromBuf = new Buffer(0);
+  let toBuf = new Buffer(0);
   let maybeErr = false;
   fs.createReadStream(spec.lipsum)
   .on('error', done)
