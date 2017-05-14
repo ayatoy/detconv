@@ -1,13 +1,13 @@
 {
   "name": "detconv",
   "version": "1.0.0",
-  "description": "",
+  "description": "Detective character encoding conversion",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["encoding", "charset", "convert"],
+  "author": "ayatoy",
   "license": "MIT",
   "dependencies": {
     "iconv-lite": "^0.4.17",
@@ -16,5 +16,8 @@
   "devDependencies": {
     "chai": "*",
     "mocha": "*"
+  },
+  "engines": {
+    "node": ">=4.0.0"
   }
 }
