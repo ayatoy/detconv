@@ -49,3 +49,6 @@ $ cd detconv
 $ npm install
 $ npm test
 ```
+
+## License
+MIT
