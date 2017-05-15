@@ -2,6 +2,8 @@
 
 Just combined [jschardet](https://github.com/aadsm/jschardet) and [iconv-lite](https://github.com/ashtuchkin/iconv-lite).
 
+[![NPM](https://nodei.co/npm/detconv.png?compact=true)](https://nodei.co/npm/detconv/)
+
 ## Usage
 
 ### Function
