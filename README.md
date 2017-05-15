@@ -1,4 +1,4 @@
-## Detective character encoding conversion for Node.js
+## Detective character encoding conversion for Node.js [![Build Status](https://travis-ci.org/ayatoy/detconv.svg?branch=master)](https://travis-ci.org/ayatoy/detconv)
 
 Just combined [jschardet](https://github.com/aadsm/jschardet) and [iconv-lite](https://github.com/ashtuchkin/iconv-lite).
 
@@ -39,3 +39,11 @@ Depending on the characteristics of the detection method, all of the input chunk
 ## Supported encodings
 
 Encodings supported by [jschardet](https://github.com/aadsm/jschardet) and [iconv-lite](https://github.com/ashtuchkin/iconv-lite) can be used.
+
+## Test
+```bash
+$ git clone https://github.com/ayatoy/detconv.git
+$ cd detconv
+$ npm install
+$ npm test
+```
