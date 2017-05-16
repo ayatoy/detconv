@@ -27,6 +27,9 @@ detconv.convert = (input, encoding) => {
     throw new Error('input must be Buffer or string: ' + input);
   }
   const outputEncoding = normalizeCharsetName(encoding || 'utf-8');
+  if (outputEncoding === 'string') {
+    return str;
+  }
   if (!iconv.encodingExists(outputEncoding)) {
     throw new Error('output encoding does not exists: ' + outputEncoding);
   }
