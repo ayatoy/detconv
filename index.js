@@ -7,7 +7,12 @@ const iconv = require('iconv-lite');
 
 const detconv = module.exports;
 
-const normalizeCharsetName = name => name.toLowerCase().replace(/_/g, '-');
+const normalizeCharsetName = name => {
+  if (typeof name === 'string') {
+    return name.toLowerCase().replace(/_/g, '-');
+  }
+  return 'utf-8';
+}
 
 detconv.convert = (input, encoding) => {
   let str = null;
@@ -26,7 +31,7 @@ detconv.convert = (input, encoding) => {
   } else {
     throw new Error('input must be Buffer or string: ' + input);
   }
-  const outputEncoding = normalizeCharsetName(encoding || 'utf-8');
+  const outputEncoding = normalizeCharsetName(encoding);
   if (outputEncoding === 'string') {
     return str;
   }
