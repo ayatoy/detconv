@@ -43,8 +43,12 @@ detconv.convert = (input, encoding) => {
 
 class DetconvConvertStream extends Transform {
   constructor(encoding, options) {
-    super(options);
-    this._encoding = encoding;
+    const normalizedEncoding = normalizeCharsetName(encoding);
+    super(Object.assign({}, options, {
+      decodeStrings: false,
+      encoding: normalizedEncoding === 'string' ? 'utf8' : null,
+    }));
+    this._encoding = normalizedEncoding;
     this._buffer = null;
   }
   _transform(chunk, encoding, done) {
@@ -62,7 +66,10 @@ class DetconvConvertStream extends Transform {
   _flush(done) {
     if (!this._buffer) return done();
     try {
-      this.push(detconv.convert(this._buffer, this._encoding));
+      this.push(
+        detconv.convert(this._buffer, this._encoding),
+        this._encoding === 'string' ? 'utf8' : undefined
+      );
       done();
     } catch (e) {
       done(e);
