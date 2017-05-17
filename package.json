@@ -1,6 +1,6 @@
 {
   "name": "detconv",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Detective character encoding conversion",
   "main": "index.js",
   "scripts": {
