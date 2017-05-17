@@ -12,7 +12,7 @@ const normalizeCharsetName = name => {
     return name.toLowerCase().replace(/_/g, '-');
   }
   return 'utf-8';
-}
+};
 
 detconv.convert = (input, encoding) => {
   let str = null;
