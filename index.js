@@ -14,12 +14,15 @@ const normalizeCharsetName = name => {
   return 'utf-8';
 };
 
-detconv.convert = (input, encoding) => {
+detconv.convert = (input, encoding, confidence) => {
   let str = null;
   if (Buffer.isBuffer(input)) {
     const detected = jschardet.detect(input);
     if (!detected.encoding) {
       throw new Error('detection failed');
+    }
+    if (confidence && confidence > detected.confidence) {
+      throw new Error('not enough confidence');
     }
     const inputEncoding = normalizeCharsetName(detected.encoding);
     if (!iconv.encodingExists(inputEncoding)) {
@@ -42,7 +45,7 @@ detconv.convert = (input, encoding) => {
 };
 
 class DetconvConvertStream extends Transform {
-  constructor(encoding, options) {
+  constructor(encoding, confidence, options) {
     const normalizedEncoding = normalizeCharsetName(encoding);
     super(Object.assign({}, options, {
       decodeStrings: false,
@@ -50,6 +53,7 @@ class DetconvConvertStream extends Transform {
     }));
     this._encoding = normalizedEncoding;
     this._buffer = null;
+    this._confidence = confidence;
   }
   _transform(chunk, encoding, done) {
     if (Buffer.isBuffer(chunk)) {
@@ -67,7 +71,7 @@ class DetconvConvertStream extends Transform {
     if (!this._buffer) return done();
     try {
       this.push(
-        detconv.convert(this._buffer, this._encoding),
+        detconv.convert(this._buffer, this._encoding, this._confidence),
         this._encoding === 'string' ? 'utf8' : undefined
       );
       done();
@@ -80,4 +84,6 @@ class DetconvConvertStream extends Transform {
 }
 
 detconv.DetconvConvertStream = DetconvConvertStream;
-detconv.convertStream = encoding => new DetconvConvertStream(encoding);
+detconv.convertStream = (encoding, confidence) => {
+  return new DetconvConvertStream(encoding, confidence);
+}
